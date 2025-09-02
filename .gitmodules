@@ -1,0 +1,3 @@
+[submodule "capricorn-kernel"]
+	path = capricorn-kernel
+	url = https://github.com/LrkSeraph/xiaomi_capricorn_msm8996pro_kernel.git
