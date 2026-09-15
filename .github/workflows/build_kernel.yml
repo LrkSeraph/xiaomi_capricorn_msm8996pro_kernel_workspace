@@ -1,0 +1,42 @@
+name: Build kernel for capricorn(Xiaomi 5s)
+
+on:
+  workflow_dispatch:
+    inputs:
+      config:
+        description: 'config file in workspace root'
+        required: true
+        default: 'config-current'
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+    - name: 'Checkout workspace'
+      uses: actions/checkout@v4
+      with:
+        submodules: recursive
+        fetch-depth: 1
+    - name: 'Install additional tools'
+      run: |
+        sudo apt update -y;
+        sudo apt install -y build-essential bc bison flex libelf-dev libssl-dev \
+        libncurses-dev rsync cpio kmod dwarves zstd lz4 xz-utils bash gcc g++ device-tree-compiler
+    - name: 'Copy config'
+      run: |
+        set -eux
+        mkdir capricorn-kernel/out
+        cp "${{ inputs.config }}" capricorn-kernel/out/.config
+    - name: 'Build kernel'
+      run: |
+        cd capricorn-kernel && bash build.sh -j4 && bash build.sh bootimg
+    - name: 'Upload artifacts'
+      uses: actions/upload-artifact@v4
+      with:
+        name: Build outputs
+        path: |
+          capricorn-kernel/out/boot.img
+          capricorn-kernel/out/vendor_boot.img
+          capricorn-kernel/out/arch/arm64/boot/Image
+          capricorn-kernel/out/.config
+        
