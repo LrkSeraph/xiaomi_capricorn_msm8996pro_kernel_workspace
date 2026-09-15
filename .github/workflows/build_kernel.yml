@@ -29,7 +29,8 @@ jobs:
         cp "${{ inputs.config }}" capricorn-kernel/out/.config
     - name: 'Build kernel'
       run: |
-        cd capricorn-kernel && bash ../build.sh -j4 && bash ../build.sh bootimg
+        ln -s ../build.sh capricorn-kernel/build.sh
+        cd capricorn-kernel && bash build.sh -j4 && bash build.sh bootimg
     - name: 'Upload artifacts'
       uses: actions/upload-artifact@v4
       with:
